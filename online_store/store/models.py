@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200,
@@ -17,7 +19,15 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('store:product_list_by_category', args=[self.slug])
 
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(available=True)
+    
 
 class Product(models.Model):
     category = models.ForeignKey(Category,
@@ -42,6 +52,9 @@ class Product(models.Model):
                                    verbose_name='Добавлен')
     updated = models.DateTimeField(auto_now=True,
                                    verbose_name='Изменен')
+    
+    objects = models.Manager()
+    published = PublishedManager()
 
     class Meta:
         ordering = ['name']
@@ -55,3 +68,6 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('store:product_detail', args=[self.id, self.slug])
