@@ -1,8 +1,10 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
 
 from .models import *
-from .utils import ContextMixin
+from .utils import ContextMixin, get_user_context
+from cart.forms import *
+from cart.cart import Cart
 
 
 class ProductListView(ContextMixin, ListView):
@@ -20,16 +22,24 @@ class ProductListView(ContextMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        add_context = self.get_user_context(category=self.category)
-        return context | add_context
-
-
-class ProductDetailView(ContextMixin, DetailView):
-    queryset = Product.published.all()
-    template_name = 'store/product/detail.html'
-    context_object_name = 'product'
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
+        cart = Cart(self.request)
+        context['category'] = self.category
+        context['cart'] = cart
         add_context = self.get_user_context()
         return context | add_context
+
+
+def product_detail(request, id, slug):
+    product = get_object_or_404(Product,
+                                id=id,
+                                slug=slug,
+                                available=True)
+    cart_product_form = CartAddProductForm()
+    cart = Cart(request)
+    context = get_user_context()
+    context['cart'] = cart
+    context['product'] = product
+    context['cart_product_form'] = cart_product_form
+    return render(request=request,
+                  template_name='store/product/detail.html',
+                  context=context)
