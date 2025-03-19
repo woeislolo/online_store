@@ -4,7 +4,10 @@
 {% block title %}
   {{ product.name }}
 {% endblock %}
+
 {% block content %}
+  {% include "store/product/categories.html" %}
+  
   <div class="product-detail">
     <img src="{% if product.image %}{{ product.image.url }}{% else %}
     {% static 'img/no_image.png' %}{% endif %}">

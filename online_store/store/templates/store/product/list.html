@@ -6,21 +6,8 @@
 {% endblock %}
 
 {% block content %}
-  <div id="sidebar">
-    <h3>Категории</h3>
-    <ul>
-      <li {% if not category %}class="selected"{% endif %}>
-        <a href="{% url "store:product_list" %}">Все товары</a>
-      </li>
-      {% for c in categories %}
-        {% if c.products__count > 0 %}
-        <li {% if category.slug == c.slug %}class="selected"{% endif %}>
-          <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-        </li>
-        {% endif %}
-      {% endfor %}
-    </ul>
-  </div>
+  {% include "store/product/categories.html" %}
+  
   <div id="main" class="product-list">
     {% for product in products %}
       <div class="item">
