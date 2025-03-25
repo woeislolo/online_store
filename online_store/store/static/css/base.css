@@ -77,7 +77,7 @@ table.cart img {
 }
 
 tbody td.num {
-    text-align:right;
+    text-align:center;
 }
 
 td input[type="submit"] {
@@ -334,4 +334,14 @@ form div.field {
     background:#efefef;
     color:#666;
     border-radius:4px;
+}
+
+.main-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-image {
+    width: 80px;
 }
