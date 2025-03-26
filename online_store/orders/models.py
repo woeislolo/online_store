@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 from store.models import Product
 
@@ -21,6 +22,9 @@ class Order(models.Model):
                                    verbose_name='Время обновления')
     paid = models.BooleanField(default=False,
                                verbose_name='Оплачен')
+    stripe_id = models.CharField(max_length=250, 
+                                 blank=True,
+                                 verbose_name='id платежа в Stripe')
 
     class Meta:
         ordering = ['-created']
