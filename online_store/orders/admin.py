@@ -4,6 +4,7 @@ import datetime
 from django.http import HttpResponse
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from .models import *
 
@@ -17,7 +18,8 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'first_name', 'last_name', 'email',
                     'address', 'post_code', 'city', 'paid', 
-                    'order_stripe_payment', 'created', 'updated']
+                    'order_stripe_payment', 'created', 'updated',
+                    'order_detail',]
     list_filter = ['paid', 'created', 'updated']
     inlines = [OrderItemInline]
     actions = ['export_to_csv']
@@ -29,7 +31,13 @@ class OrderAdmin(admin.ModelAdmin):
             return mark_safe(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{obj.stripe_id}</a>')
         return None
     
-    order_stripe_payment.short_description = 'id платежа (ссылка в Stripe)'
+    order_stripe_payment.short_description = 'ID платежа (ссылка в Stripe)'
+
+    def order_detail(self, obj):
+        url = reverse('orders:admin_order_detail', args=[obj.id])
+        return mark_safe(f'<a href="{url}">Посмотреть</a>')
+    
+    order_detail.short_description = 'Детали заказа'
 
 
     @admin.action(description='Экспорт в CSV')
