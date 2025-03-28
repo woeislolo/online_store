@@ -131,6 +131,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'store/static',
+    BASE_DIR / 'orders/static',
 ]
 
 MEDIA_ROOT = BASE_DIR / 'media'

@@ -19,7 +19,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'first_name', 'last_name', 'email',
                     'address', 'post_code', 'city', 'paid', 
                     'order_stripe_payment', 'created', 'updated',
-                    'order_detail',]
+                    'order_detail', 'order_pdf']
     list_filter = ['paid', 'created', 'updated']
     inlines = [OrderItemInline]
     actions = ['export_to_csv']
@@ -38,6 +38,12 @@ class OrderAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href="{url}">Посмотреть</a>')
     
     order_detail.short_description = 'Детали заказа'
+
+    def order_pdf(self, obj):
+        url = reverse('orders:admin_order_pdf', args=[obj.id])
+        return mark_safe(f'<a href="{url}">PDF</a>')
+    
+    order_pdf.short_description = 'Инвойс'
 
 
     @admin.action(description='Экспорт в CSV')
