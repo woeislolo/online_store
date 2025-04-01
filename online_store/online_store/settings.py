@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'payment.apps.PaymentConfig',
+    'coupons.apps.CouponsConfig',
 ]
 
 MIDDLEWARE = [
@@ -131,7 +132,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'store/static',
-    BASE_DIR / 'orders/static',
+    # BASE_DIR / 'orders/static',
 ]
 
 MEDIA_ROOT = BASE_DIR / 'media'
