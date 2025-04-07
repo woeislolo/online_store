@@ -68,7 +68,7 @@
       <tr class="total">
         <td>Итого</td>
         <td colspan="4"></td>
-        <td class="num">{{ cart.get_total_price }}₽</td>
+        <td class="num">{{ cart.get_total_price_after_discount|floatformat:2 }}₽</td>
       </tr>
     </tbody>
   </table>
