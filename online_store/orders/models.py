@@ -1,7 +1,11 @@
+from decimal import Decimal
+
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from store.models import Product
+from coupons.models import Coupon
 
 
 class Order(models.Model):
@@ -25,6 +29,17 @@ class Order(models.Model):
     stripe_id = models.CharField(max_length=250, 
                                  blank=True,
                                  verbose_name='id платежа в Stripe')
+    coupon = models.ForeignKey(Coupon,
+                               related_name='orders',
+                               null=True,
+                               blank=True,
+                               on_delete=models.SET_NULL,
+                               verbose_name='Промокод')
+    discount = models.IntegerField(default=0,
+                                   validators=[MinValueValidator(0),
+                                               MaxValueValidator(100)],
+                                   verbose_name='Скидка, %')
+
 
     class Meta:
         ordering = ['-created']
@@ -37,8 +52,21 @@ class Order(models.Model):
     def __str__(self):
         return f'Заказ №{self.id}'
 
-    def get_total_cost(self):
+    def get_total_cost_before_discount(self):
+        """ Возвращает сумму заказа без скидки """
         return sum(item.get_cost() for item in self.items.all())
+
+    def get_discount(self):
+        """ Возвращает сумму скидки """
+        total_cost = self.get_total_cost_before_discount()
+        if self.discount:
+            return total_cost * (self.discount / Decimal(100))
+        return Decimal(0)
+    
+    def get_total_cost(self):
+        """ Возвращает сумму заказа с учетом скидки """
+        total_cost = self.get_total_cost_before_discount()
+        return total_cost - self.get_discount()
     
     def get_stripe_url(self):
         """ Возвращает URL для платежа по заказу на сайте платежного шлюза Stripe """
@@ -70,5 +98,6 @@ class OrderItem(models.Model):
         return str(self.id)
 
     def get_cost(self):
+        """ Возвращает стоимость товара в заказе (кол-во товара * цена товара) """
         return self.price * self.quantity
     
